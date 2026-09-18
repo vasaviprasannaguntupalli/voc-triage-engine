@@ -74,40 +74,22 @@ const WEBHOOK_URL =
   "https://vasaviprasannag.app.n8n.cloud/webhook/09dff8cf-b5ec-4c68-bd4d-79b06023f775";
 
 type ColumnKey =
-  | "feedback"
   | "core_workflow"
   | "priority"
   | "status"
   | "rationale"
-  | "company_name"
-  | "company_id"
-  | "user_name"
-  | "user_id"
-  | "mrr"
-  | "subscription_tier"
-  | "renewal_date"
-  | "csm_health_score";
+  | "company_id";
 
 const COLUMNS: { key: ColumnKey; label: string }[] = [
-  { key: "feedback", label: "User Issue / Complaint / Transcript Snippet" },
   { key: "core_workflow", label: "Core Workflow Tracked / Analytics" },
   { key: "priority", label: "Priority" },
   { key: "status", label: "Status" },
   { key: "rationale", label: "Rationale" },
-  { key: "company_name", label: "Company Name" },
   { key: "company_id", label: "Company ID" },
-  { key: "user_name", label: "User Name" },
-  { key: "user_id", label: "User ID" },
-  { key: "mrr", label: "MRR" },
-  { key: "subscription_tier", label: "Subscription Tier" },
-  { key: "renewal_date", label: "Renewal Date" },
-  { key: "csm_health_score", label: "CSM Health Score" },
 ];
 
 function getCellValue(row: TriageRow, key: ColumnKey): string {
   switch (key) {
-    case "feedback":
-      return row.feedback;
     case "core_workflow":
       return row.core_workflow_tracked || row.workflow;
     case "priority":
@@ -116,24 +98,8 @@ function getCellValue(row: TriageRow, key: ColumnKey): string {
       return row.status;
     case "rationale":
       return row.rationale;
-    case "company_name":
-      return row.company_name ?? "—";
     case "company_id":
       return row.company_id;
-    case "user_name":
-      return row.user_name ?? "—";
-    case "user_id":
-      return row.user_id ?? "—";
-    case "mrr":
-      return row.mrr !== undefined && row.mrr !== null ? String(row.mrr) : "—";
-    case "subscription_tier":
-      return row.subscription_tier ?? "—";
-    case "renewal_date":
-      return row.renewal_date ?? "—";
-    case "csm_health_score":
-      return row.csm_health_score !== undefined && row.csm_health_score !== null
-        ? String(row.csm_health_score)
-        : "—";
     default:
       return "—";
   }
@@ -191,7 +157,7 @@ function loadPptxGenJS(): Promise<new () => any> {
   if (!pptxGenJSLoader) {
     pptxGenJSLoader = new Promise((resolve, reject) => {
       const script = document.createElement("script");
-      script.src = "/vendor/pptxgen.bundle.js";
+      script.src = "/libs/pptxgen.bundle.js";
       script.onload = () => {
         if (window.PptxGenJS) {
           resolve(window.PptxGenJS);
@@ -539,8 +505,6 @@ export default function Home() {
               <a
                 key={sheet.name}
                 href={sheet.url}
-                target="_blank"
-                rel="noopener noreferrer"
                 className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-3.5 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-50"
               >
                 <Sheet size={16} />
@@ -569,7 +533,7 @@ export default function Home() {
                   </th>
                 ))}
                 <th className="whitespace-nowrap p-4 font-semibold">
-                  Actions
+                  Action
                 </th>
               </tr>
             </thead>
@@ -605,8 +569,7 @@ export default function Home() {
                             </td>
                           );
                         }
-                        const isWide =
-                          col.key === "feedback" || col.key === "rationale";
+                        const isWide = col.key === "rationale";
                         return (
                           <td
                             key={col.key}
