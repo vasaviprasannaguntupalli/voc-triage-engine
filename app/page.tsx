@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import {
-  Sparkles,
+  Rocket,
   Loader2,
   ClipboardList,
   Download,
@@ -190,16 +190,20 @@ function escapeCsvValue(value: string): string {
   return value;
 }
 
+const ROWS_PER_PAGE = 5;
+
 export default function Home() {
   const [results, setResults] = useState<TriageRow[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [exporting, setExporting] = useState<string | null>(null);
+  const [page, setPage] = useState(0);
 
   const handleAnalyze = async () => {
     setIsLoading(true);
     setError(null);
     setResults([]);
+    setPage(0);
 
     for (const ticket of pendingTickets) {
       try {
@@ -441,6 +445,12 @@ export default function Home() {
   };
 
   const hasResults = results.length > 0;
+  const totalPages = Math.max(1, Math.ceil(results.length / ROWS_PER_PAGE));
+  const currentPage = Math.min(page, totalPages - 1);
+  const pagedResults = results.slice(
+    currentPage * ROWS_PER_PAGE,
+    currentPage * ROWS_PER_PAGE + ROWS_PER_PAGE
+  );
 
   return (
     <main className="min-h-screen p-8">
@@ -452,49 +462,63 @@ export default function Home() {
             </div>
             <div>
               <h1 className="text-xl font-bold text-gray-900">
-                VoC Triage Engine
+                NextBuild
               </h1>
             </div>
           </div>
-
-          <button
-            onClick={handleAnalyze}
-            disabled={isLoading}
-            className="flex items-center gap-2 rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-gray-700 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {isLoading ? (
-              <Loader2 size={16} className="animate-spin" />
-            ) : (
-              <Sparkles size={16} />
-            )}
-            {isLoading ? "Analyzing..." : "Analyze Pending Tickets"}
-          </button>
         </header>
 
-        <div className="mb-4 flex flex-wrap items-center gap-3">
-          <button
-            onClick={handleDownloadCsv}
-            disabled={!hasResults}
-            className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-3.5 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            <Download size={16} />
-            Download as CSV
-          </button>
+        <section className="mb-8 rounded-xl border border-gray-200 bg-white p-8 text-center">
+          <h2 className="mb-4 inline-block rounded-lg bg-indigo-50 px-3 py-1 text-sm font-extrabold text-indigo-700 sm:text-base">
+            Stop Triaging. Start Roadmapping.
+          </h2>
 
-          <button
-            onClick={handleCreatePptx}
-            disabled={!hasResults || exporting === "pptx"}
-            className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-3.5 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {exporting === "pptx" ? (
-              <Loader2 size={16} className="animate-spin" />
-            ) : (
-              <Presentation size={16} />
-            )}
-            Create PowerPoint Deck for{" "}
-            <span className="font-bold text-amber-600">Stakeholder Review</span>
-          </button>
-        </div>
+          <p className="mx-auto max-w-3xl text-sm leading-relaxed text-gray-600 sm:text-base">
+            Requirements hit PMs from every direction: customer tickets,
+            leadership demands, market research, and competitor moves.
+            Saying &quot;yes&quot; to everything creates massive feature
+            bloat, but missing the right signal costs PMs critical revenue.
+          </p>
+
+          <p className="mx-auto mt-4 max-w-3xl text-sm leading-relaxed text-gray-600 sm:text-base">
+            Right now, PMs waste over 15 hours a week manually
+            cross-referencing these endless funnels with CRM Revenue and
+            Data Analytics. <span className="font-bold text-gray-900">NextBuild</span>{" "}
+            automates this. We ingest the noise, weigh it against your live
+            business data, and isolate the P0 features that actually drive
+            business impact, prevent high-value churn, and are worth your
+            engineering time.
+          </p>
+
+          <div className="mx-auto mt-6 inline-flex w-fit flex-wrap items-center justify-center gap-x-6 gap-y-2 rounded-lg border bg-gray-50/50 px-5 py-3">
+            <div className="text-center">
+              <p className="whitespace-nowrap text-sm font-bold text-gray-900">
+                15 hrs/week → 3 sec
+              </p>
+              <p className="mt-0.5 whitespace-nowrap text-[11px] font-medium text-gray-500">
+                Manual Triage Time
+              </p>
+            </div>
+            <div className="hidden h-8 w-px bg-gray-200 sm:block" />
+            <div className="text-center">
+              <p className="whitespace-nowrap text-sm font-bold text-gray-900">
+                87%
+              </p>
+              <p className="mt-0.5 whitespace-nowrap text-[11px] font-medium text-gray-500">
+                Low-Impact Requests Bypassed
+              </p>
+            </div>
+            <div className="hidden h-8 w-px bg-gray-200 sm:block" />
+            <div className="text-center">
+              <p className="whitespace-nowrap text-sm font-bold text-gray-900">
+                Live MRR
+              </p>
+              <p className="mt-0.5 whitespace-nowrap text-[11px] font-medium text-gray-500">
+                Tied to P0 Priorities
+              </p>
+            </div>
+          </div>
+        </section>
 
         <div className="mb-6 rounded-lg border border-gray-200 bg-white p-4">
           <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-500">
@@ -512,6 +536,25 @@ export default function Home() {
               </a>
             ))}
           </div>
+        </div>
+
+        <div className="mb-6 flex flex-col items-center gap-2">
+          <button
+            onClick={handleAnalyze}
+            disabled={isLoading}
+            className="flex items-center gap-2 rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {isLoading ? (
+              <Loader2 size={16} className="animate-spin" />
+            ) : (
+              <Rocket size={16} />
+            )}
+            {isLoading ? "Generating..." : "Generate Data-Backed Roadmap"}
+          </button>
+          <p className="whitespace-nowrap text-xs font-medium text-gray-500">
+            Turn endless requirements into a revenue-proven sprint in 3
+            seconds.
+          </p>
         </div>
 
         {error && (
@@ -546,11 +589,12 @@ export default function Home() {
                   >
                     {isLoading
                       ? "Analyzing tickets, results will appear here..."
-                      : "No tickets analyzed yet. Click \"Analyze Pending Tickets\" to begin."}
+                      : "No tickets analyzed yet. Click \"Generate Data-Backed Roadmap\" to begin."}
                   </td>
                 </tr>
               ) : (
-                results.map((row, index) => {
+                pagedResults.map((row, localIndex) => {
+                  const index = currentPage * ROWS_PER_PAGE + localIndex;
                   const canCreatePrd = row.status.toUpperCase() === "TO BE PICKED";
                   return (
                     <tr key={index} className="hover:bg-gray-50">
@@ -592,7 +636,7 @@ export default function Home() {
                               ? "Create a PRD draft for this ticket"
                               : "PRD creation is only available for tickets marked 'To Be Picked'"
                           }
-                          className="flex items-center gap-1.5 whitespace-nowrap rounded-lg border border-gray-300 bg-white px-2.5 py-1.5 text-xs font-semibold text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
+                          className="flex items-center gap-1.5 whitespace-nowrap rounded-lg border border-indigo-200 bg-indigo-50 px-2.5 py-1.5 text-xs font-semibold text-indigo-700 transition hover:bg-indigo-100 disabled:cursor-not-allowed disabled:border-gray-300 disabled:bg-white disabled:text-gray-700 disabled:opacity-40"
                         >
                           {exporting === `prd-${index}` ? (
                             <Loader2 size={14} className="animate-spin" />
@@ -608,6 +652,56 @@ export default function Home() {
               )}
             </tbody>
           </table>
+        </div>
+
+        {hasResults && (
+          <div className="mt-3 flex items-center justify-between">
+            <p className="text-xs text-gray-500">
+              Page {currentPage + 1} of {totalPages}
+            </p>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setPage((p) => Math.max(0, p - 1))}
+                disabled={currentPage === 0}
+                className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-semibold text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Previous
+              </button>
+              <button
+                onClick={() =>
+                  setPage((p) => Math.min(totalPages - 1, p + 1))
+                }
+                disabled={currentPage >= totalPages - 1}
+                className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-semibold text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
+
+        <div className="mt-6 flex flex-wrap items-center gap-3">
+          <button
+            onClick={handleDownloadCsv}
+            disabled={!hasResults}
+            className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-3.5 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <Download size={16} />
+            Download Roadmap
+          </button>
+
+          <button
+            onClick={handleCreatePptx}
+            disabled={!hasResults || exporting === "pptx"}
+            className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-3.5 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {exporting === "pptx" ? (
+              <Loader2 size={16} className="animate-spin" />
+            ) : (
+              <Presentation size={16} />
+            )}
+            Generate Executive Deck
+          </button>
         </div>
       </div>
     </main>
