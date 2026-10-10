@@ -10,6 +10,8 @@ import {
   FileText,
   Sheet,
   TrendingUp,
+  PackageCheck,
+  CheckCircle2,
 } from "lucide-react";
 
 const SOURCE_SHEETS = [
@@ -80,6 +82,7 @@ interface TriageApiResponse {
   calibration_factor?: number;
   outcomes_used?: number;
   issue_type?: string;
+  prediction_id?: string;
 }
 
 interface TriageRow extends TriageApiResponse {
@@ -224,6 +227,27 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [exporting, setExporting] = useState<string | null>(null);
   const [page, setPage] = useState(0);
+  const [shipped, setShipped] = useState<Record<string, string>>({});
+
+  const handleShip = async (row: TriageRow) => {
+    if (!row.prediction_id) return;
+    const id = row.prediction_id;
+    setExporting(`ship-${id}`);
+    try {
+      const response = await fetch("/api/ship", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prediction_id: id }),
+      });
+      if (!response.ok) throw new Error("Could not mark as shipped");
+      const data = await response.json();
+      setShipped((prev) => ({ ...prev, [id]: data.shipped_date ?? "today" }));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not mark as shipped");
+    } finally {
+      setExporting(null);
+    }
+  };
 
   const handleAnalyze = async () => {
     setIsLoading(true);
@@ -682,6 +706,7 @@ export default function Home() {
                         );
                       })}
                       <td className="p-4">
+                        <div className="flex flex-col items-start gap-2">
                         <button
                           onClick={() => handleCreatePrd(row, index)}
                           disabled={!canCreatePrd || exporting === `prd-${index}`}
@@ -699,6 +724,35 @@ export default function Home() {
                           )}
                           Create PRD
                         </button>
+                        {row.prediction_id && shipped[row.prediction_id] ? (
+                          <span className="flex items-center gap-1.5 whitespace-nowrap rounded-lg border border-green-200 bg-green-50 px-2.5 py-1.5 text-xs font-semibold text-green-700">
+                            <CheckCircle2 size={14} />
+                            Shipped {shipped[row.prediction_id]}
+                          </span>
+                        ) : (
+                          <button
+                            onClick={() => handleShip(row)}
+                            disabled={
+                              !canCreatePrd ||
+                              !row.prediction_id ||
+                              exporting === `ship-${row.prediction_id}`
+                            }
+                            title={
+                              canCreatePrd
+                                ? "Record that this fix has shipped so the system can learn from the outcome"
+                                : "Only tickets marked 'To Be Picked' can be shipped"
+                            }
+                            className="flex items-center gap-1.5 whitespace-nowrap rounded-lg border border-green-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-green-700 transition hover:bg-green-50 disabled:cursor-not-allowed disabled:border-gray-300 disabled:text-gray-700 disabled:opacity-40"
+                          >
+                            {exporting === `ship-${row.prediction_id}` ? (
+                              <Loader2 size={14} className="animate-spin" />
+                            ) : (
+                              <PackageCheck size={14} />
+                            )}
+                            Mark as shipped
+                          </button>
+                        )}
+                        </div>
                       </td>
                     </tr>
                   );
