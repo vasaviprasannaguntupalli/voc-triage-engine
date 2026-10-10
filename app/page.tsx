@@ -32,24 +32,29 @@ const SOURCE_SHEETS = [
 
 const pendingTickets = [
   {
+    company_id: "Comp_037",
+    workflow: "dashboard_load",
+    feedback: "The dashboard is completely down and our finance team cannot close the month.",
+  },
+  {
     company_id: "Comp_034",
-    workflow: "report_data_export",
-    feedback: "NetSuite sync timed out with error 504.",
+    workflow: "user_onboarding",
+    feedback: "The NetSuite sync during onboarding fails intermittently with error 504 for some new users.",
   },
   {
     company_id: "Comp_012",
-    workflow: "receipt_capture_ocr",
-    feedback: "Change the upload button to pink.",
+    workflow: "card_transaction_auth",
+    feedback: "Card approvals sometimes take 8 to 10 seconds, which frustrates our drivers at the pump.",
   },
   {
-    company_id: "Comp_037",
+    company_id: "Comp_012",
     workflow: "card_transaction_auth",
-    feedback: "Fuel cards are declining at the terminal.",
+    feedback: "It would be great to export card transactions in a custom CSV format.",
   },
   {
     company_id: "Comp_026",
-    workflow: "dashboard_load",
-    feedback: "Please add a dark mode option to the dashboard.",
+    workflow: "card_transaction_auth",
+    feedback: "How do I change the spending limit for a single card?",
   },
 ];
 
