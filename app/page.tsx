@@ -33,23 +33,23 @@ const SOURCE_SHEETS = [
 const pendingTickets = [
   {
     company_id: "Comp_034",
-    workflow: "report_data_export",
-    feedback: "NetSuite sync timed out with error 504.",
+    workflow: "user_onboarding",
+    feedback: "Onboarding fails at the NetSuite sync step with error 504 for new users.",
   },
   {
     company_id: "Comp_012",
-    workflow: "receipt_capture_ocr",
-    feedback: "Change the upload button to pink.",
+    workflow: "card_transaction_auth",
+    feedback: "Change the card approval button to pink.",
   },
   {
     company_id: "Comp_037",
-    workflow: "card_transaction_auth",
-    feedback: "Fuel cards are declining at the terminal.",
+    workflow: "dashboard_load",
+    feedback: "The dashboard takes over 30 seconds to load and often times out.",
   },
   {
     company_id: "Comp_026",
-    workflow: "dashboard_load",
-    feedback: "Please add a dark mode option to the dashboard.",
+    workflow: "card_transaction_auth",
+    feedback: "Please add a dark mode option to the card settings page.",
   },
 ];
 
