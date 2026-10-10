@@ -544,28 +544,28 @@ export default function Home() {
           <div className="mx-auto mt-6 inline-flex w-fit flex-wrap items-center justify-center gap-x-6 gap-y-2 rounded-lg border bg-gray-50/50 px-5 py-3">
             <div className="text-center">
               <p className="whitespace-nowrap text-sm font-bold text-gray-900">
-                15 hrs/week → 3 sec
+                4 sources → 1 score
               </p>
               <p className="mt-0.5 whitespace-nowrap text-[11px] font-medium text-gray-500">
-                Manual Triage Time
+                Tickets, calls, CRM revenue, product analytics
               </p>
             </div>
             <div className="hidden h-8 w-px bg-gray-200 sm:block" />
             <div className="text-center">
               <p className="whitespace-nowrap text-sm font-bold text-gray-900">
-                87%
+                ~12 sec per ticket
               </p>
               <p className="mt-0.5 whitespace-nowrap text-[11px] font-medium text-gray-500">
-                Low-Impact Requests Bypassed
+                vs. hours of manual cross-referencing
               </p>
             </div>
             <div className="hidden h-8 w-px bg-gray-200 sm:block" />
             <div className="text-center">
               <p className="whitespace-nowrap text-sm font-bold text-gray-900">
-                Live MRR
+                100% auditable
               </p>
               <p className="mt-0.5 whitespace-nowrap text-[11px] font-medium text-gray-500">
-                Tied to P0 Priorities
+                Every priority shows its Reach, Impact, Confidence, Effort
               </p>
             </div>
           </div>
