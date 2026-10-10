@@ -9,6 +9,7 @@ import {
   Presentation,
   FileText,
   Sheet,
+  TrendingUp,
 } from "lucide-react";
 
 const SOURCE_SHEETS = [
@@ -71,6 +72,14 @@ interface TriageApiResponse {
   subscription_tier?: string;
   renewal_date?: string;
   csm_health_score?: string | number;
+  rice_reach?: number;
+  rice_impact?: number;
+  rice_confidence?: number;
+  rice_effort?: number;
+  rice_score?: number;
+  calibration_factor?: number;
+  outcomes_used?: number;
+  issue_type?: string;
 }
 
 interface TriageRow extends TriageApiResponse {
@@ -85,6 +94,7 @@ type ColumnKey =
   | "core_workflow"
   | "priority"
   | "status"
+  | "rice"
   | "rationale"
   | "company_id";
 
@@ -93,6 +103,7 @@ const COLUMNS: { key: ColumnKey; label: string }[] = [
   { key: "core_workflow", label: "Core Workflow Tracked / Analytics" },
   { key: "priority", label: "Priority" },
   { key: "status", label: "Status" },
+  { key: "rice", label: "RICE Score" },
   { key: "rationale", label: "Rationale" },
   { key: "company_id", label: "Company ID" },
 ];
@@ -107,6 +118,10 @@ function getCellValue(row: TriageRow, key: ColumnKey): string {
       return row.priority;
     case "status":
       return row.status;
+    case "rice":
+      return row.rice_score === undefined
+        ? "—"
+        : `${row.rice_score} (R ${row.rice_reach}, I ${row.rice_impact}, C ${row.rice_confidence}, E ${row.rice_effort})`;
     case "rationale":
       return row.rationale;
     case "company_id":
@@ -456,6 +471,7 @@ export default function Home() {
   };
 
   const hasResults = results.length > 0;
+  const learning = results.find((r) => r.calibration_factor !== undefined);
   const totalPages = Math.max(1, Math.ceil(results.length / ROWS_PER_PAGE));
   const currentPage = Math.min(page, totalPages - 1);
   const pagedResults = results.slice(
@@ -574,6 +590,18 @@ export default function Home() {
           </div>
         )}
 
+        {learning && (
+          <div className="mb-4 flex items-start gap-3 rounded-lg border border-indigo-200 bg-indigo-50 p-4 text-sm text-indigo-900">
+            <TrendingUp size={18} className="mt-0.5 shrink-0" />
+            <p>
+              <span className="font-semibold">Learning from outcomes: </span>
+              {(learning.outcomes_used ?? 0) > 0
+                ? `Impact estimates are calibrated x${learning.calibration_factor} using ${learning.outcomes_used} shipped outcome(s), where the predicted impact was compared with the actual change in MRR and customer health.`
+                : "No shipped outcomes yet. Impact estimates stay uncalibrated (x1) until the first fix ships and is measured."}
+            </p>
+          </div>
+        )}
+
         <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white shadow-sm">
           <table className="w-full text-left text-sm">
             <thead className="bg-gray-50 text-xs uppercase tracking-wide text-gray-500">
@@ -621,6 +649,21 @@ export default function Home() {
                           return (
                             <td key={col.key} className="p-4">
                               <StatusBadge status={row.status} />
+                            </td>
+                          );
+                        }
+                        if (col.key === "rice") {
+                          return (
+                            <td key={col.key} className="p-4">
+                              <div className="font-semibold text-gray-900">
+                                {row.rice_score ?? "—"}
+                              </div>
+                              {row.rice_score !== undefined && (
+                                <div className="mt-0.5 whitespace-nowrap text-xs text-gray-500">
+                                  R {row.rice_reach} · I {row.rice_impact} · C{" "}
+                                  {row.rice_confidence} · E {row.rice_effort}
+                                </div>
+                              )}
                             </td>
                           );
                         }
