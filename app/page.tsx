@@ -12,6 +12,8 @@ import {
   TrendingUp,
   PackageCheck,
   CheckCircle2,
+  Ticket,
+  X,
 } from "lucide-react";
 
 const SOURCE_SHEETS = [
@@ -228,6 +230,7 @@ export default function Home() {
   const [exporting, setExporting] = useState<string | null>(null);
   const [page, setPage] = useState(0);
   const [shipped, setShipped] = useState<Record<string, string>>({});
+  const [showJira, setShowJira] = useState(false);
 
   const handleShip = async (row: TriageRow) => {
     if (!row.prediction_id) return;
@@ -805,6 +808,18 @@ export default function Home() {
                             Mark as shipped
                           </button>
                         )}
+                        <button
+                          onClick={() => setShowJira(true)}
+                          disabled={!canCreatePrd}
+                          title="Create a Jira ticket and sync its status automatically"
+                          className="flex items-center gap-1.5 whitespace-nowrap rounded-lg border border-blue-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-blue-700 transition hover:bg-blue-50 disabled:cursor-not-allowed disabled:border-gray-300 disabled:text-gray-700 disabled:opacity-40"
+                        >
+                          <Ticket size={14} />
+                          Sync with Jira
+                          <span className="rounded bg-blue-100 px-1 py-0.5 text-[10px] font-bold uppercase text-blue-700">
+                            Soon
+                          </span>
+                        </button>
                         </div>
                       </td>
                     </tr>
@@ -865,6 +880,69 @@ export default function Home() {
           </button>
         </div>
       </div>
+
+      {showJira && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/40 p-4"
+          onClick={() => setShowJira(false)}
+        >
+          <div
+            className="w-full max-w-lg rounded-xl bg-white p-6 shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h3 className="text-lg font-bold text-gray-900">
+                  Jira sync
+                  <span className="ml-2 rounded bg-blue-100 px-1.5 py-0.5 align-middle text-[10px] font-bold uppercase text-blue-700">
+                    Coming soon
+                  </span>
+                </h3>
+                <p className="mt-1 text-sm text-gray-600">
+                  Today the PM clicks Mark as shipped. With Jira connected, that
+                  manual step disappears.
+                </p>
+              </div>
+              <button
+                onClick={() => setShowJira(false)}
+                className="rounded p-1 text-gray-500 hover:bg-gray-100"
+                aria-label="Close"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <ol className="mt-4 space-y-3 text-sm text-gray-700">
+              <li className="flex gap-3">
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-gray-900 text-[11px] font-bold text-white">
+                  1
+                </span>
+                Create a Jira ticket from any To Be Picked row, with the PRD
+                attached.
+              </li>
+              <li className="flex gap-3">
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-gray-900 text-[11px] font-bold text-white">
+                  2
+                </span>
+                When the ticket moves to Done, NextBuild records the ship date
+                automatically.
+              </li>
+              <li className="flex gap-3">
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-[11px] font-bold text-white">
+                  3
+                </span>
+                The outcome check runs on a schedule, compares predicted and
+                actual impact, and recalibrates the next roadmap.
+              </li>
+            </ol>
+
+            <p className="mt-5 rounded-lg bg-gray-50 p-3 text-xs text-gray-600">
+              Not connected in this demo. Use Mark as shipped to simulate the
+              Done status.
+            </p>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
