@@ -569,6 +569,59 @@ export default function Home() {
               </p>
             </div>
           </div>
+
+          <p className="mt-8 text-xs font-semibold uppercase tracking-wide text-gray-500">
+            How it works: a roadmap that learns from every fix
+          </p>
+          <div className="mx-auto mt-3 grid max-w-4xl grid-cols-1 gap-3 text-left sm:grid-cols-4">
+            {[
+              {
+                n: "1",
+                title: "Ingest",
+                text: "Tickets, calls, CRM revenue and product analytics in one view.",
+              },
+              {
+                n: "2",
+                title: "Score",
+                text: "AI classifies each request and RICE math ranks it P0 to P3.",
+              },
+              {
+                n: "3",
+                title: "Ship",
+                text: "Draft the PRD, build the executive deck, mark the fix as shipped.",
+              },
+              {
+                n: "4",
+                title: "Learn",
+                text: "Predicted vs actual impact calibrates the next roadmap.",
+              },
+            ].map((step) => (
+              <div
+                key={step.n}
+                className={`rounded-lg border p-3 ${
+                  step.n === "4"
+                    ? "border-indigo-200 bg-indigo-50"
+                    : "border-gray-200 bg-white"
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`flex h-5 w-5 items-center justify-center rounded-full text-[11px] font-bold text-white ${
+                      step.n === "4" ? "bg-indigo-600" : "bg-gray-900"
+                    }`}
+                  >
+                    {step.n}
+                  </span>
+                  <span className="text-sm font-bold text-gray-900">
+                    {step.title}
+                  </span>
+                </div>
+                <p className="mt-1.5 text-xs leading-relaxed text-gray-600">
+                  {step.text}
+                </p>
+              </div>
+            ))}
+          </div>
         </section>
 
         <div className="mb-6 rounded-lg border border-gray-200 bg-white p-4">
