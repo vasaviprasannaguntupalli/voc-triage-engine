@@ -81,6 +81,7 @@ interface TriageRow extends TriageApiResponse {
 }
 
 type ColumnKey =
+  | "feedback"
   | "core_workflow"
   | "priority"
   | "status"
@@ -88,6 +89,7 @@ type ColumnKey =
   | "company_id";
 
 const COLUMNS: { key: ColumnKey; label: string }[] = [
+  { key: "feedback", label: "Customer Request" },
   { key: "core_workflow", label: "Core Workflow Tracked / Analytics" },
   { key: "priority", label: "Priority" },
   { key: "status", label: "Status" },
@@ -97,6 +99,8 @@ const COLUMNS: { key: ColumnKey; label: string }[] = [
 
 function getCellValue(row: TriageRow, key: ColumnKey): string {
   switch (key) {
+    case "feedback":
+      return row.feedback;
     case "core_workflow":
       return row.core_workflow_tracked || row.workflow;
     case "priority":
@@ -620,7 +624,7 @@ export default function Home() {
                             </td>
                           );
                         }
-                        const isWide = col.key === "rationale";
+                        const isWide = col.key === "rationale" || col.key === "feedback";
                         return (
                           <td
                             key={col.key}
