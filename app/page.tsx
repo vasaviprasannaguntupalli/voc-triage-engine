@@ -32,19 +32,24 @@ const SOURCE_SHEETS = [
 
 const pendingTickets = [
   {
-    company_id: "comp_901",
+    company_id: "Comp_034",
     workflow: "report_data_export",
     feedback: "NetSuite sync timed out with error 504.",
   },
   {
-    company_id: "comp_101",
+    company_id: "Comp_012",
     workflow: "receipt_capture_ocr",
     feedback: "Change the upload button to pink.",
   },
   {
-    company_id: "comp_808",
+    company_id: "Comp_037",
     workflow: "card_transaction_auth",
     feedback: "Fuel cards are declining at the terminal.",
+  },
+  {
+    company_id: "Comp_026",
+    workflow: "dashboard_load",
+    feedback: "Please add a dark mode option to the dashboard.",
   },
 ];
 
@@ -69,9 +74,6 @@ interface TriageRow extends TriageApiResponse {
   workflow: string;
   company_id: string;
 }
-
-const WEBHOOK_URL =
-  "https://vasaviprasannag.app.n8n.cloud/webhook/09dff8cf-b5ec-4c68-bd4d-79b06023f775";
 
 type ColumnKey =
   | "core_workflow"
@@ -207,7 +209,7 @@ export default function Home() {
 
     for (const ticket of pendingTickets) {
       try {
-        const response = await fetch(WEBHOOK_URL, {
+        const response = await fetch("/api/triage", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
