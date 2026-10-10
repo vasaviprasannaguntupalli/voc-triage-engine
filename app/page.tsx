@@ -571,6 +571,15 @@ export default function Home() {
                 Every priority shows its Reach, Impact, Confidence, Effort
               </p>
             </div>
+            <div className="hidden h-8 w-px bg-gray-200 sm:block" />
+            <div className="text-center">
+              <p className="whitespace-nowrap text-sm font-bold text-indigo-700">
+                Self-correcting
+              </p>
+              <p className="mt-0.5 whitespace-nowrap text-[11px] font-medium text-gray-500">
+                Predicted vs actual impact tunes every score
+              </p>
+            </div>
           </div>
 
           <p className="mt-8 text-xs font-semibold uppercase tracking-wide text-gray-500">
